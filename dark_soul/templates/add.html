@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "form_macros.html" import render_field %}
+
+{% block title %}
+Thermos -- Add a URL
+{%  endblock %}
+
+{% block content %}
+    <section>
+        <h1>Add a new URL</h1>
+        <form action="" method="post">
+            {#{form.hidden_tag()}#}
+            {{ form.csrf_token }}
+            <table>
+                {#
+                <tr {% if form.url.errors %} class="error" {%endif%}>
+                    <td>Please enter your bookmark here:</td>
+                    <td>{{form.url(size=50)}}</td>
+                </tr>
+                <tr class="error">
+                    <td></td>
+                    <td>
+                        <ul>
+                            {% for error in form.url.errors %}
+                                <li>{{error}}</li>
+                            {%endfor%}
+                        </ul>
+                    </td>
+                <tr>
+                    <td>Add an optional description:</td>
+                    <td>{{form.description(size=50)}}</td>
+                </tr>
+                #}
+                {{ render_field(form.url, size=50) }}
+                {{ render_field(form.description, size=50) }}
+                <tr>
+                    <td></td>
+                    <td><button type='submit'>Submit</button></td>
+                </tr>
+            </table>
+        </form>
+    </section>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
