@@ -1,0 +1,25 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Dark soul -- bookmarks for sindar {{ user.username }}
+{%  endblock %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>Bookmarks for {{ user.username }}</h1>
+
+            <ul>
+                {% for bm in user.bookmarks %}
+                    <li>
+                        <a href="{{ bm.url }}">{{ bm.url }}</a>
+                        <span class="timestamp">Added at {{ bm.date }}</span>
+                    </li>
+                {% else %}
+                    <li>This user has no bookmarks yet.</li>
+                {% endfor %}
+            </ul>
+        </header>
+    </article>
+{% endblock %}

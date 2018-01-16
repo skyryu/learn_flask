@@ -2,3 +2,10 @@ This project is the implementation of Plurasight course: Introduction to the Fla
 
 Environment set up:
 To view sqllite db file, I use SQL Lite Studio 3.1.1
+
+20180114
+pip install Flask-Script
+flask.ext.script is deprecated, use flask_script package instead.
+
+20180116
+add user page.

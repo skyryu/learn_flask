@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Thermos -- Welcome
+Dark soul sindar -- Welcome
 {%  endblock %}
 
 {% block content %}
@@ -15,7 +15,10 @@ Thermos -- Welcome
             {% if recent_bookmarks %}
                 <ul>
                 {% for bm in recent_bookmarks %}
-                    <li>{{ bm.user }} added <a href="{{bm.url}}">{{bm.url}}</a></li>
+                    <li>
+                        <a href='{{ url_for('user', username=bm.user.username) }}'>{{ bm.user.username }}</a>
+                        added <a href="{{bm.url}}">{{bm.url}}</a>
+                    </li>
                 {% endfor %}
                 </ul>
             {% else %}
