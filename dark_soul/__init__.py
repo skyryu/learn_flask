@@ -7,6 +7,7 @@ import os
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 from logging import DEBUG
 
@@ -22,6 +23,12 @@ app.logger.setLevel(DEBUG)
 
 #sqlite db
 db = SQLAlchemy(app)
+
+#configure authentication
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'login'
+login_manager.init_app(app)
 
 import dark_soul.models
 import dark_soul.views

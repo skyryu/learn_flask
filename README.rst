@@ -9,3 +9,7 @@ flask.ext.script is deprecated, use flask_script package instead.
 
 20180116
 add user page.
+
+20180121
+conda install flask-login
+add login validation and login page

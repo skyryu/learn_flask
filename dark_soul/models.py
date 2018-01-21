@@ -4,6 +4,8 @@ use SQLAlcheny to persist website data
 
 from datetime import datetime
 from sqlalchemy import desc
+from flask_login import UserMixin
+
 from dark_soul import db
 
 class Bookmark(db.Model):
@@ -23,7 +25,7 @@ class Bookmark(db.Model):
     def __repr__(self):
         return "<Bookmark '{}': '{}'>".format(self.description, self.url)
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     '''
     user store
     '''

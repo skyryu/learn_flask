@@ -3,11 +3,13 @@ demo
 '''
 
 from flask import render_template, request, redirect, url_for, flash
+from flask_login import login_required, login_user
 
-from dark_soul.forms import BookmarkForm
+from dark_soul.forms import BookmarkForm, LoginForm
 from dark_soul.models import Bookmark, User
 from dark_soul import app
 from dark_soul import db
+from dark_soul import login_manager
 
 ''' use sqlalchemy instead in memory storage
 bookmarks = []
@@ -23,16 +25,17 @@ def new_bookmarks(num):
     return sorted(bookmarks, key=lambda bm: bm['date'], reverse=True)[:num]
 '''
 
-def logged_in_user():
-    return User.query.filter_by(username='hongjin').first()
+@login_manager.user_loader
+def load_user(userid):
+    return User.query.get(int(userid))
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html',
-    recent_bookmarks=Bookmark.newest(5))
+    return render_template('index.html', recent_bookmarks=Bookmark.newest(5))
 
 @app.route('/add', methods=['GET', 'POST'])
+@login_required
 def add():
     form = BookmarkForm()
     if form.validate_on_submit():
@@ -58,9 +61,23 @@ def add():
     '''
 
 @app.route('/user/<username>')
+@login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        #login and validate te user...
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is not None:
+            login_user(user, form.remember_me.data)
+            flash("Logged in successfully as {}.".format(user.username))
+            return redirect(request.args.get('next') or url_for('index'))
+        flash('Incorrect username or password.')
+    return render_template('login.html', form=form)
 
 @app.errorhandler(404)
 def page_not_found(e):
