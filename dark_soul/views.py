@@ -3,7 +3,7 @@ demo
 '''
 
 from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 from dark_soul.forms import BookmarkForm, LoginForm
 from dark_soul.models import Bookmark, User
@@ -41,7 +41,7 @@ def add():
     if form.validate_on_submit():
         url = form.url.data
         description = form.description.data
-        bm = Bookmark(user=logged_in_user(), url=url, description=description)
+        bm = Bookmark(user= current_user, url=url, description=description)
         db.session.add(bm)
         db.session.commit()
         #store_bookmark(url, description)
@@ -71,13 +71,20 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         #login and validate te user...
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is not None:
+        user = User.get_by_username(form.username.data)
+        if user is not None and user.check_password(form.password.data):
             login_user(user, form.remember_me.data)
             flash("Logged in successfully as {}.".format(user.username))
-            return redirect(request.args.get('next') or url_for('index'))
+            return redirect(request.args.get('next') or url_for('user', username=user.username))
         flash('Incorrect username or password.')
     return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def page_not_found(e):

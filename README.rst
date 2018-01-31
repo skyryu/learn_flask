@@ -13,3 +13,10 @@ add user page.
 20180121
 conda install flask-login
 add login validation and login page
+
+20180131
+add current_user and logout function
+in flask_login 0.4.1 the is_authenticated is a property instead of a method, so
+we should use current_user.is_authenticated instead of current_user.is_authenticated().
+
+add password authentication.
