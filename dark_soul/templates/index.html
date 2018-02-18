@@ -12,6 +12,16 @@ Dark soul sindar -- Welcome
         </header>
         <section>
             <h2>Rencently Added</h2>
+
+            {% if recent_bookmarks %}
+                {% with bookmarks=recent_bookmarks %}
+                    {% include "bookmark_list.html" %}
+                {% endwith %}
+            {% else %}
+                No bookmarks yet.
+            {% endif %}
+
+            {#
             {% if recent_bookmarks %}
                 <ul>
                 {% for bm in recent_bookmarks %}
@@ -24,6 +34,7 @@ Dark soul sindar -- Welcome
             {% else %}
                 No bookmark yet.
             {% endif %}
+            #}
         </section>
         <section>
             <h2>article section h2</h2>

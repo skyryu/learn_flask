@@ -20,3 +20,38 @@ in flask_login 0.4.1 the is_authenticated is a property instead of a method, so
 we should use current_user.is_authenticated instead of current_user.is_authenticated().
 
 add password authentication.
+
+---------------------------------
+20180214
+check WTForm validation method to see how the implementation of in-line
+validator at: wtforms/wtforms/form.py
+
+def validate(self):
+    """
+    Validates the form by calling `validate` on each field, passing any
+    extra `Form.validate_<fieldname>` validators to the field validator.
+    """
+    extra = {}
+    for name in self._fields:
+        inline = getattr(self.__class__, 'validate_%s' % name, None)
+        if inline is not None:
+            extra[name] = [inline]
+
+    return super(Form, self).validate(extra)
+
+----------------------------
+20180214
+Valentine's day.
+
+pip install flask-moment
+
+----------------------------
+20180215
+re-arrange the layout of the bookmark list into bookmark_list.html.
+modify the css for bookmark_list.html in main.css
+
+---------------------------
+20180216
+
+Importing flask.ext.moment is deprecated, use flask_moment instead.
+

@@ -2,7 +2,11 @@ from flask_wtf import FlaskForm
 from wtforms.fields import StringField, PasswordField, BooleanField, SubmitField
 #from flask.ext.wtf.html5 import URLField
 from wtforms.fields.html5 import URLField
-from wtforms.validators import DataRequired, url
+from wtforms.validators import DataRequired, url, Length, Email, Regexp,\
+EqualTo, ValidationError
+
+
+from dark_soul.models import User
 
 
 class BookmarkForm(FlaskForm):
@@ -37,7 +41,42 @@ class BookmarkForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    '''
+    this is the form for login page
+    '''
     username = StringField('Your Username:', validators=[DataRequired()])
     password = PasswordField('Password:', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Login')
+
+
+class SignupForm(FlaskForm):
+    '''
+    this is the form for sign up page
+    '''
+    username = StringField('Username:',
+                            validators=[DataRequired(), Length(3, 80),
+                                        Regexp('^[A-Za-z0-9_]{3,}$',
+                                                message='User name consists\
+                                                of numbers, letters and\
+                                                underscores.'
+                                                )])
+
+    password = PasswordField('Password:', validators=[DataRequired()])
+    password2 = PasswordField('Confirm password:',
+                                validators=[DataRequired(),
+                                            EqualTo('password',
+                                                    message='password unmatch.'
+                                                    )])
+
+    email = StringField('Email', validators=[DataRequired(), Length(3, 80), Email()])
+
+    def validate_email(self, email_field):
+        if User.query.filter_by(email=email_field.data).first():
+            raise ValidationError('Email is already registered.')
+
+    def validate_username(self, username_field):
+        if User.query.filter_by(username=username_field.data).first():
+            raise ValidationError('User name is already registered.')
+
+    #submit = SubmitField('Login')

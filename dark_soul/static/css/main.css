@@ -19,8 +19,6 @@ html {
     background: #b3d4fc;
     text-shadow: none;
 }
-
-::selection {
     background: #b3d4fc;
     text-shadow: none;
 }
@@ -161,8 +159,8 @@ nav a:hover {
    ========================================================================== */
 
 /* link styling */
-a {
-    color: #8F540D;
+a, a:visited {
+    color: #1E5373;
 }
 a:hover, aside a:hover, aside a:visited:hover {
     color: #D39447;
@@ -215,6 +213,36 @@ input, button{
     margin-left: 10px;
 }
 
+/* bookmark list styling */
+ul.bookmarks {
+    list-style: none none;
+    padding-left: 0;
+}
+
+ul.bookmarks li {
+    padding-bottom: .5em;
+    border-top: 1px solid #7EA6BF;
+    padding: 1em 0;
+}
+
+a.header {
+    color: #326786;
+    text-decoration: none;
+    display: block;
+}
+
+a.header h3 {
+    margin: 0 0;
+}
+
+div.info {
+    font-size: .98em;
+    color: #666666;
+}
+
+span.editlinks {
+    float: right;
+}
 
 /* ==========================================================================
    Media Queries

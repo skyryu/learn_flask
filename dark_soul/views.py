@@ -5,7 +5,7 @@ demo
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, login_user, logout_user, current_user
 
-from dark_soul.forms import BookmarkForm, LoginForm
+from dark_soul.forms import BookmarkForm, LoginForm, SignupForm
 from dark_soul.models import Bookmark, User
 from dark_soul import app
 from dark_soul import db
@@ -78,6 +78,21 @@ def login():
             return redirect(request.args.get('next') or url_for('user', username=user.username))
         flash('Incorrect username or password.')
     return render_template('login.html', form=form)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = SignupForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data)
+
+        db.session.add(user)
+        db.session.commit()
+        flash("Welcome, {}! Please login.".format(user.username))
+        return redirect(url_for('login'))
+    return render_template('signup.html', form=form)
 
 
 @app.route('/logout')
