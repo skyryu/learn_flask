@@ -48,7 +48,7 @@ def add():
         flash("store '{}'".format(description))
         return redirect(url_for('index'))
     else:
-        return render_template('add.html', form=form)
+        return render_template('bookmark_form.html', form=form, title='Add new URL')
     '''
     if request.method == 'POST':
         url = request.form['url']
@@ -59,6 +59,21 @@ def add():
     else:
         return render_template('add.html')
     '''
+
+@app.route('/edit/<int:bookmark_id>', methods=['GET', 'POST'])
+@login_required
+def edit_bookmark(bookmark_id):
+    bookmark = Bookmark.query.get_or_404(bookmark_id)
+    if current_user != bookmark.user:
+        abort(403)
+    form = BookmarkForm(obj=bookmark)
+    if form.validate_on_submit():
+        form.populate_obj(bookmark)
+        db.session.commit()
+        flash("Store '{}'".format(bookmark.description))
+        return redirect(url_for('index'))
+    else:
+        return render_template('bookmark_form.html', form=form, title='Edit URL')
 
 @app.route('/user/<username>')
 @login_required
@@ -100,6 +115,10 @@ def signup():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.errorhandler(403)
+def permission_deny(e):
+    return render_template('403.html'), 403
 
 @app.errorhandler(404)
 def page_not_found(e):

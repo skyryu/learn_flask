@@ -17,6 +17,11 @@
                     {{ bookmark.user.username }} 
                 </a>
                 {{ moment(bookmark.date).fromNow() }}.
+                {% if current_user == bookmark.user %}
+                    <span class="editlinks">
+                        <a href="{{ url_for('edit_bookmark', bookmark_id=bookmark.id) }}">edit</a>
+                    </span>
+                {% endif %}
             </div>
         </li>
     {% endfor %}
