@@ -1,3 +1,4 @@
+--------------------------------
 This project is the implementation of Plurasight course: Introduction to the Flask Microframework (2014 Dec by Reindert Ekker)
 
 Environment set up:
@@ -54,4 +55,13 @@ modify the css for bookmark_list.html in main.css
 20180216
 
 Importing flask.ext.moment is deprecated, use flask_moment instead.
+
+---------------------------
+20180509
+
+many thing happened during these 3 month since the last time I come. sad
+things. new start.
+
+pip install flask-migrate
+flask.ext.migrate is deprecated, use flask_migrate instead.
 
