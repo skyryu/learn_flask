@@ -11,7 +11,17 @@
             </a>
 
             <div class="info">
-                <br>
+                <span class="tags">
+                    {% if bookmark.tags %}
+                        {% for tag in bookmark.tags.split(',') %}
+                            <a herf='#'>{{ tag }}</a>
+                        {% endfor %}
+                    {% else %}
+                        No tags
+                    {% endif %}
+                </span>
+
+                <br/>
                 Added by 
                 <a href="{{ url_for('user', username=bookmark.user.username) }}">
                     {{ bookmark.user.username }} 

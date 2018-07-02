@@ -65,3 +65,25 @@ things. new start.
 pip install flask-migrate
 flask.ext.migrate is deprecated, use flask_migrate instead.
 
+---------------------------
+20180510
+
+add Tag table in models.py
+add Tag in view and templates.
+
+--------------------------
+20180514
+create environment.yaml by using(suggested):
+    conda env export > environment.yaml
+this can be share in other env by using:
+    conda env update -f=/path/to/environment.yml
+
+create requirement.txt by using(if don't have conda):
+    pip freeze > requirement.txt
+this can be shared in other env by using:
+    pip install -r /path/requirements.txt
+
+-------------------------
+20180626
+fix a bug for bookmark_list.html about the tags.
+
