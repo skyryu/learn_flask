@@ -30,6 +30,7 @@ class Bookmark(db.Model):
     def newest(num):
         return Bookmark.query.order_by(desc(Bookmark.date)).limit(num)
 
+    '''
     @property
     def tags(self):
         return ",".join([t.name for t in self._tags])
@@ -38,6 +39,14 @@ class Bookmark(db.Model):
     def tags(self, string):
         if string:
             self._tags = [Tag.get_or_create(name) for name in string.split(',')]
+    '''
+    @property
+    def tags(self):
+        return [t.name for t in self._tags]
+
+    @tags.setter
+    def tags(self, value_list):
+        self._tags = [Tag.get_or_create(name) for name in value_list]
 
 
     def __repr__(self):

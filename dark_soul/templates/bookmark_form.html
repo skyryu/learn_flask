@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% from "form_macros.html" import render_field %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',
+filename='bower_components/select2/dist/css/select2.min.css') }}"/>
+{% endblock %}
+
 {% block title %}
 Thermos -- {{ title }} 
 {%  endblock %}
@@ -33,7 +39,7 @@ Thermos -- {{ title }}
                 #}
                 {{ render_field(form.url, size=50) }}
                 {{ render_field(form.description, size=50) }}
-                {{ render_field(form.tags, size=50) }}
+                {{ render_field(form.tags, size=50, id="tags") }}
                 <tr class="submit">
                     <td></td>
                     <td><button type='submit'>Submit</button></td>
@@ -44,4 +50,31 @@ Thermos -- {{ title }}
 {% endblock %}
 
 {% block sidebar %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static',
+filename='bower_components/select2/dist/js/select2.min.js') }}"></script>
+<script>
+$(document).ready( function(){
+    /*
+    var _tag_list = {{ all_tags()|map(attribute='name')|list|tojson|safe }};
+    var _tags = [];
+    for(var i=0;i<_tag_list.length;++i){
+        _tags[i] = {id:i, text:_tag_list[i]};
+    }*/
+   $('select').select2({
+        tags: true,
+        width: 'style',
+        tokenSeparators: [",", " "],
+        createTag: function(params){
+            var term = $.trim(params.term);
+            if(false === /^[a-zA-Z0-9]*$/.test(term)){
+                return null;//to disable tag creation
+            }
+            return { id:term, text:term };
+        }
+    });
+});
+</script>
 {% endblock %}

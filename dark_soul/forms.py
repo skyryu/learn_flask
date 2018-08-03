@@ -1,13 +1,34 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import widgets
+from wtforms.fields import StringField, PasswordField, BooleanField,\
+SubmitField, SelectMultipleField
 #from flask.ext.wtf.html5 import URLField
 from wtforms.fields.html5 import URLField
 from wtforms.validators import DataRequired, url, Length, Email, Regexp,\
 EqualTo, ValidationError
 
 
-from dark_soul.models import User
+from dark_soul.models import User, Tag
 
+
+class Select2MultipleField(SelectMultipleField):
+    widget = widgets.Select(multiple=True)
+    def process_formdata(self, value):
+        super(Select2MultipleField, self).process_formdata(value)
+
+        #expanding choice list, support tagging in select2.
+        exist_choices = list(c[0] for c in self.choices)
+        for v in map(self.coerce, value):
+            if v not in exist_choices:
+                self.choices.append((v,v))
+    '''
+    def pre_validate(self, form):
+        if self.data:
+            exist_choices = list(c[0] for c in self.choices)
+            for d in self.data:
+                if d not in exist_choices:
+                    self.choices.append((d,d))
+    '''
 
 class BookmarkForm(FlaskForm):
     '''
@@ -20,8 +41,12 @@ class BookmarkForm(FlaskForm):
 
     url = StringField('The URL for your book mark:', validators=[DataRequired(), url()])
     description = StringField('Add an optional description:')
+    '''
+    #select2 v4.0 requires underline tag to be <select> instead of <input>
     tags = StringField('Tags', validators=[Regexp(r'^[a-zA-Z0-9, ]*$',
                         message="Tags can only contain letters and numbers")])
+    '''
+    tags = Select2MultipleField('Tags:', choices=[(t.name, t.name) for t in Tag.all()])
 
     def validate(self):
         '''
@@ -40,10 +65,15 @@ class BookmarkForm(FlaskForm):
             self.description.data = self.url.data
 
         #filter out empty and duplicate tag names
+        '''
         stripped = [t.strip() for t in self.tags.data.split(',')]
         not_empty = [tag for tag in stripped if tag]
         tagset = set(not_empty)
         self.tags.data = ",".join(tagset)
+        '''
+        nodup = set(self.tags.data)
+        self.tags.data = list(nodup)
+
 
         return True
 

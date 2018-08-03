@@ -1,0 +1,22 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Dark soul -- bookmarks for tag {{ tag }}
+{%  endblock %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>Bookmarks for {{ tag }}</h1>
+
+            {% if tag.bookmarks.count() > 0 %}
+                {% with bookmarks=tag.bookmarks %}
+                    {% include "bookmark_list.html" %}
+                {% endwith %}
+            {% else %}
+                No bookmark has been associated with this tga yet.
+            {% endif %}
+        </header>
+    </article>
+{% endblock %}

@@ -10,6 +10,7 @@ textarea {
     color: #222;
 }
 
+
 html {
     font-size: 1em;
     line-height: 1.4;
@@ -158,16 +159,30 @@ nav a:hover {
    Author's custom styles
    ========================================================================== */
 
-/* link styling */
-a, a:visited {
-    color: #1E5373;
+/*select2 <select> style */
+#tags select{
+    width: auto;
 }
-a:hover, aside a:hover, aside a:visited:hover {
+
+
+/* link styling */
+/*a, a:visited {
+    color: #1E5373;
+}*/
+a:hover {
     color: #D39447;
 }
 
-a:visited {
-    color: #1E5373;
+aside a {
+    color: #FFD6A3;
+}
+
+aside a:visited {
+    color: #D39447;
+}
+
+aside a:hover {
+    color: white;/*#F5BB73;*/
 }
 
 h1, h2, h3, h4, h5, h6 {

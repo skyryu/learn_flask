@@ -62,6 +62,22 @@ def add():
         return render_template('add.html')
     '''
 
+@app.route('/delete/<int:bookmark_id>', methods=['GET', 'POST'])
+@login_required
+def delete_bookmark(bookmark_id):
+    bookmark = Bookmark.query.get_or_404(bookmark_id)
+    if current_user != bookmark.user:
+        abort(403)
+    if request.method == 'POST':
+        db.session.delete(bookmark)
+        db.session.commit()
+        flash("Delete '{}'".format(bookmark.description))
+        return redirect(url_for('user', username=current_user.username))
+    else:
+        flash('Please confirm delete the bookmark.')
+        return render_template('confirm_delete.html', bookmark=bookmark, no_links=True)
+
+
 @app.route('/edit/<int:bookmark_id>', methods=['GET', 'POST'])
 @login_required
 def edit_bookmark(bookmark_id):
@@ -111,6 +127,10 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html', form=form)
 
+@app.route('/tag/<name>')
+def tag(name):
+    tag = Tag.query.filter_by(name=name).first_or_404()
+    return render_template('tag.html', tag=tag)
 
 @app.route('/logout')
 @login_required
@@ -129,6 +149,10 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('500.html'), 500
+
+@app.context_processor
+def inject_tags():
+    return dict(all_tags=Tag.all)
 
 if __name__ == '__main__':
     app.run(debug=True)

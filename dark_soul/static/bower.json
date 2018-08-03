@@ -1,0 +1,20 @@
+{
+  "name": "dark_soul",
+  "homepage": "https://github.com/skyryu/learn_flask",
+  "authors": [
+    "skyryu <skyryu@126.com>"
+  ],
+  "description": "js lib maintainer for dark_soul proj",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "select2": "^4.0.5"
+  }
+}

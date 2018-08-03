@@ -7,8 +7,10 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.min.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        {% block styles %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.min.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        {% endblock %}
 
         <script src="../static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
@@ -53,6 +55,9 @@
                 {% block sidebar %}
                     <aside>
                         <h3>Tags</h3>
+                            {% for t in all_tags() %}
+                                <a href="{{ url_for('tag', name=t) }}">{{ t }}</a>
+                            {% endfor %}
                         <p></p>
                     </aside>
                 {% endblock %}
@@ -71,5 +76,8 @@
         #}
         {{ moment.include_jquery() }}
         {{ moment.include_moment() }}
+
+        {% block scripts %}
+        {% endblock %}
     </body>
 </html>
