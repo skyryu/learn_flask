@@ -134,7 +134,68 @@ adding a delete link in bookmark_form.html, adding the corresponding view.
 adding confirm_delete.html. Extract out the bookmark.html from
 bookmark_list.html for reuse.
 
+----------------------
+20180811
+server depolyment: apply an AWS EC2 for free.
+install nginx. the AWC EC2 uses GNU/Linux which use yum repository for nginx.
+so need to set up its repo config in /etc/yum.repos.d/nginx.repo:
 
+    [nginx]
+    name=nginx repo
+    baseurl=http://nginx.org/packages/OS/OSRELEASE/$basearch/
+    gpgcheck=0
+    enabled=1
 
+here the OS I choose CentOS.
+see link: http://nginx.org/en/linux_packages.html
+
+after yum install nginx, you can: sudo service nginx start
+if you see below alert, it means that you need the root role, try sudo.
+
+    nginx: [alert] could not open error log file: open() "/var/log/nginx/error.log" 
+        failed (13: Permission denied)
+    2018/08/09 15:43:40 [warn] 2771#0: the "user" directive makes sense only if the 
+        master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:5
+    2018/08/09 15:43:40 [emerg] 2771#0: mkdir() "/var/lib/nginx/tmp/client_body" 
+        failed (13: Permission denied)
+
+after the nginx starts, you can access the nginx welcome page throught the aws
+ec2 public IP. if you find an error 404 then it might due to you haven't
+correctly configure your security group of your ec2 instance.
+by default, the in-bound rule only contains the SSH protocal at port:22. you need to
+manually add the HTTP protocal at 80 port to enable browser connect. 
+
+---------------------
+20180812
+copy a virtual environment from learn_flask:
+    # To activate this environment, use:
+    # > source activate /Users/hongjin/conda_env/test_env_cp
+    #
+    # To deactivate an active environment, use:
+    # > source deactivate
+the cmd used to copy the virtual environment:
+    conda env [create|update] -f=./environment.yaml -p /Users/hongjin/conda_env/test_env_cp
+
+Part of the packages in environment.yaml are downloaded by pip.
+I can't find a way to set the pip source in conda, the conda channel is a
+different thing from pip source. so when conda try to download packages using
+pip from the default pip source you may get time out socket error.
+
+I find a bypass to fix this issue by adding the pip source 
+in a global config file under: ~/.pip/pip.conf with content:
+    [global]
+    index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+    [install]
+    trusted-host=mirrors.aliyun.com
+
+in the ec2 us instance I expect the default pip source should be enough and the
+tsinghua pip source will become very slow as located in China.
+
+---------------------
+20180901
+create new conda environment: deploy_env for web server deployment
+create fabfile.py from deployment automation.
+pip install fabric(v2.3.1) & Invocations (The invocations pkg provides the console
+confirm function)
 
 
