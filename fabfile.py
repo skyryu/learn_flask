@@ -105,7 +105,7 @@ def info(info_str):
 @task
 def update_git_repo(c):
     info('Start updating git repo')
-    c.run('git pull', echo=True)
+    c.run('cd '+Config['git_repo_dist_path']+' && git pull', echo=True)
 
 @task
 def bower_pkg_install(c):

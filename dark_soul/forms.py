@@ -1,3 +1,4 @@
+import logging
 from flask_wtf import FlaskForm
 from wtforms import widgets
 from wtforms.fields import StringField, PasswordField, BooleanField,\
@@ -46,7 +47,14 @@ class BookmarkForm(FlaskForm):
     tags = StringField('Tags', validators=[Regexp(r'^[a-zA-Z0-9, ]*$',
                         message="Tags can only contain letters and numbers")])
     '''
-    tags = Select2MultipleField('Tags:', choices=[(t.name, t.name) for t in Tag.all()])
+    all_tags = []
+    try:
+        all_tags = Tag.all()
+    except Exception as e:
+        logging.exception(e)
+
+    tags = Select2MultipleField('Tags:',
+                                choices=[(t.name, t.name) for t in all_tags])
 
     def validate(self):
         '''
