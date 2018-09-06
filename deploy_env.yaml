@@ -1,0 +1,36 @@
+name: deploy_env2
+channels:
+- https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+- https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+- https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+- defaults
+dependencies:
+- certifi=2016.2.28
+- openssl=1.0.2l
+- pip=9.0.1
+- python=2.7.13
+- readline=6.2
+- setuptools=36.4.0
+- sqlite=3.13.0
+- tk=8.5.18
+- wheel=0.29.0
+- zlib=1.2.11
+- pip:
+  - asn1crypto==0.24.0
+  - bcrypt==3.1.4
+  - cffi==1.11.5
+  - cryptography==2.3.1
+  - enum34==1.1.6
+  - fabric==2.3.1
+  - idna==2.7
+  - invoke==1.1.1
+  - ipaddress==1.0.22
+  - meld3==1.0.2
+  - paramiko==2.4.1
+  - pyasn1==0.4.4
+  - pycparser==2.18
+  - pynacl==1.2.1
+  - six==1.11.0
+  - supervisor==3.3.4
+prefix: /Applications/Anacoda/anaconda/envs/deploy_env2
+

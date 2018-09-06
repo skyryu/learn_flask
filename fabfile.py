@@ -8,9 +8,17 @@ from fabric import task
 from invoke import Responder, Exit
 from invocations.console import confirm
 
+from fab_tools import conda_tools as conda
+from fab_tools import git_tools as git
+from fab_tools import supervisor_tools as sup
+
+
 INSTALL_RESPOND = Responder(pattern=r"Is this ok \[(Y|N|y|n)+.*]:.*",
                             response="y\n")
 Config={
+    #supervisor
+    'pname':'dark_soul',
+
     #AWS EC2 config
     'ec2_usrname':'ec2-user',
 
@@ -22,6 +30,7 @@ Config={
     #conda env config
     'env_name':'flask_py3',
     'env_dir_path':'/srv/dist/conda_env/flask_py3',
+    'deploy_env_path':'srv/dist/conda_env/deploy_py2',
     'env_yaml_path':'/srv/dist/site/environment.yaml',
     'pip_conf_path':'~/.pip/pip.conf',
 
@@ -67,8 +76,8 @@ def deploy_dist(c):
     if not confirm('the deployment will wipe out '
                    +'all the existing packages. Is this ok'):
         raise Exit('aborting dist deployment')
-    install_anaconda(c)
-    install_git(c)
+    conda.install_anaconda(c)
+    git.install_git(c)
     install_bower(c)
 
 @task
@@ -78,8 +87,8 @@ def init_dist(c):
     '''
     if not confirm('make sure you have run deploy-dist'):
         raise Exit('aborting dist initialization')
-    git_clone(c)
-    create_virtual_env(c)
+    git.git_clone(c)
+    conda.create_virtual_env(c)
     bower_pkg_install(c)
 
 @task
@@ -89,9 +98,10 @@ def update_dist(c):
     '''
     if not confirm('make sure you have run init-dist'):
         raise Exit('aborting dist updating')
-    update_git_repo(c)
-    update_virtual_env(c)
+    git.update_git_repo(c)
+    conda.update_virtual_env(c)
     update_bower_pkg(c)
+    upgrade_db(c)
 
 def info(info_str):
     '''
@@ -102,11 +112,6 @@ def info(info_str):
     print(INFO_COLOR+'[INFO]'+info_str+INFO_END)
 
 #Update and install cmd
-@task
-def update_git_repo(c):
-    info('Start updating git repo')
-    c.run('cd '+Config['git_repo_dist_path']+' && git pull', echo=True)
-
 @task
 def bower_pkg_install(c):
     info('Start installing bower package')
@@ -120,112 +125,15 @@ def update_bower_pkg(c):
     info('Start updating bower package')
     c.run('cd '+Config['bower_path']+' && bower install', echo=True)
 
+
 @task
-def update_virtual_env(c):
-    info('Start updating conda env')
-    c.sudo(Config['conda_install_path']+'/bin/conda env update'
-           +' -n '+Config['env_name']
-           +' -f='+Config['env_yaml_path'])
+def upgrade_db(c):
+    info('Start upgrade SQLAlchemy DB')
+    c.run('source /etc/anaconda/bin/activate '+Config['env_dir_path']
+          +' && cd '+Config['git_repo_dist_path']
+          +' && python manage.py db upgrade', echo=True)
 
 #tools installation cmd set
-@task
-def uninstall_anaconda(c):
-    info('Start uninstalling the anaconda if already installed')
-    if c.sudo('test -f '+Config['conda_script_path'], warn=True).ok:
-        c.sudo('rm '+Config['conda_script_path'])
-    if c.sudo('test -d '+Config['conda_install_path'], warn=True).ok:
-        c.sudo('rm -rf '+Config['conda_install_path'])
-
-@task
-def install_anaconda(c):
-    uninstall_anaconda(c)
-    info('step1> Use wget to download Anaconda')
-    c.sudo('wget https://repo.continuum.io/archive/'\
-           +Config['conda_version']+' -O '+Config['conda_script_path'])
-
-    info('step2> Run script to install anaconda')
-    c.sudo('bash '+Config['conda_script_path']+' -b -p '\
-            +Config['conda_install_path'])
-    #c.run('export PATH="/etc/anaconda/bin:$PATH"')
-    #c.run('source /etc/anaconda/bin/activate')
-
-    info('step3> Anaconda installation finished. Clean up the temp script.')
-    c.run('rm '+Config['conda_script_path'])
-
-@task
-def create_virtual_env(c):
-    remove_virtual_env(c)
-    info('Start creating conda env')
-    c.sudo(Config['conda_install_path']+'/bin/conda env create'
-           +' -n '+Config['env_name']
-           +' -f='+Config['env_yaml_path']
-           +' -p '+Config['env_dir_path'])
-
-@task
-def remove_virtual_env(c):
-    info('Start removing conda env')
-    if c.sudo('test -d '+Config['env_dir_path'], warn=True).ok:
-        c.sudo('rm -rf '+Config['env_dir_path'])
-        info(Config['env_dir_path']+' has been removed')
-
-@task
-def install_git(c):
-    uninstall_git(c)
-    info('Start installing git')
-    #the pty flag enforce the terminal to print
-    #the prompt line instead of buffering it.
-    #So that we can do the watcher pattern  matching
-    c.sudo('yum install git', pty=True,
-           watchers=[Respond['git_(un)install_confirm']]
-          )
-    result = c.run('git --version', hide='out')
-    info('git installation Done. Version:'+result.stdout.strip())
-
-    info('Start setting up git config')
-    c.run('git config --global user.name \"'+Config['git_username']+'\"')
-    c.run('git config --global user.email \"'+Config['git_useremail']+'\"')
-
-    if c.run('test -f '+Config['git_ssh_key_path'], warn=True).ok\
-       and c.run('test -f '+Config['git_ssh_key_path']+'.pub', warn=True).ok:
-        info('Rsa key already exists, skip key generation')
-    else:
-        info('Start generating ssh key')
-        c.run('ssh-keygen -t rsa -C \"'+Config['git_useremail']+'\"',
-              pty=True, watchers=[Respond['git_ssh_path_confirm'],
-                                  Respond['git_passphrase']
-                                 ]
-             )
-    ssh_result = c.run('ssh -T git@github.com', hide=True, warn=True)
-    info('Key generation done. Try ssh\n{0}, exit code:{1}'.format(
-        'stdout:'+ssh_result.stdout.strip()+'\nstderr:'+ssh_result.stderr.strip(),
-        ssh_result.exited)
-        )
-
-@task
-def uninstall_git(c):
-    info('Start uninstalling git')
-    result = c.sudo('yum remove git', pty=True,
-                    watchers=[Respond['git_(un)install_confirm']]
-                   )
-    info('Uninstallation finished, exit code:'+str(result.exited))
-
-@task
-def git_clone(c):
-    git_remove_repo(c)
-    if c.run('test -d '+Config['git_repo_dist_path'], warn=True).failed:
-        c.sudo('mkdir -p '+Config['git_repo_dist_path'])
-        c.sudo('chown -R '+Config['ec2_usrname']+' '
-               +Config['git_repo_dist_path'])
-        info('Create git repo dir:'+Config['git_repo_dist_path'])
-    info('clone git repo to:'+Config['git_repo_dist_path'])
-    c.run('git clone {0} {1}'.format(Config['github_repo_url'],
-                                     Config['git_repo_dist_path']))
-
-@task
-def git_remove_repo(c):
-    info('Start removing git repo if exists')
-    if c.run('test -d '+Config['git_repo_dist_path'], warn=True).ok:
-        c.sudo('rm -rf '+Config['git_repo_dist_path'], echo=True)
 
 @task
 def install_bower(c):
