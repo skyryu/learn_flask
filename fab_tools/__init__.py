@@ -7,6 +7,7 @@ from invoke import Responder
 Config={
     #supervisor
     'pname':'dark_soul',
+    'supervisor_config_file_name':'supervisord.conf',
 
     #AWS EC2 config
     'ec2_usrname':'ec2-user',
