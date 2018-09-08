@@ -2,6 +2,8 @@
 git fab tools
 '''
 
+from fab_tools import info
+from fab_tools import Config
 from fabric import task
 
 @task
