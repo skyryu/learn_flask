@@ -13,6 +13,7 @@ from fab_tools import git_tools as git
 from fab_tools import supervisor_tools as sup
 from fab_tools import bower_tools as bower
 from fab_tools import db_tools as db
+from fab_tools import nginx_tools as nginx
 
 
 
@@ -47,6 +48,7 @@ def init_dist(c):
     conda.create_deploy_env(c)
     bower.bower_pkg_install(c)
     sup.start(c)
+    nginx.start(c)
 
 @task
 def update_dist(c):
@@ -61,3 +63,4 @@ def update_dist(c):
     bower.update_bower_pkg(c)
     db.upgrade(c)
     sup.restart(c)
+    nginx.reload(c)

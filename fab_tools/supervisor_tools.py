@@ -22,12 +22,20 @@ _use_config_str = ' -c '+Config['git_repo_dist_path']\
 @task
 def start(c):
     info('Start launching the Supervisord')
-    c.run(_source_env_str+' && supervisord'+_use_config_str
-          , echo=True)
 
     result = c.run(_source_env_str+' && supervisorctl'
-                   +_use_config_str+' status', hide='out')
-    info('Supervisord started:\n'+result.stdout.strip())
+                   +_use_config_str+' pid', hide='out')
+    if result.stdout.strip().isdigit():
+        info('Supervisord is already running')
+        restart(c)
+
+    else:
+        c.run(_source_env_str+' && supervisord'+_use_config_str
+              , echo=True)
+
+        result = c.run(_source_env_str+' && supervisorctl'
+                       +_use_config_str+' status', hide='out')
+        info('Supervisord started:\n'+result.stdout.strip())
 
 @task
 def restart(c):
@@ -39,4 +47,4 @@ def restart(c):
 
     result = c.run(_source_env_str+' && supervisorctl'
                    +_use_config_str+' status', hide='out')
-    info('fcgi program  started:\n'+result.stdout.strip())
+    info('fcgi program restarted:\n'+result.stdout.strip())

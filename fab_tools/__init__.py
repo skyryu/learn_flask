@@ -5,6 +5,10 @@ for server deployment, initialization and updating.
 from invoke import Responder
 
 Config={
+    #nginx
+    'nginx_conf_file_srv_path':'/etc/nginx',
+    'nginx_conf_file_repo_path':'config/nginx.conf',
+
     #supervisor
     'pname':'dark_soul',
     'supervisor_config_file_name':'supervisord.conf',
